@@ -19,6 +19,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.relevantcodes.extentreports.ExtentTest;
+
 import driver.DriverScript;
 
 public class Datatable extends DriverScript{
@@ -27,12 +30,12 @@ public class Datatable extends DriverScript{
 	 * Purpose			: to get the row number form the excel file
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: filePath, sheetName
+	 * Arguments		: String filePath, String sheetName, String resultLocation, ExtentTest test
 	 * Return type		: int
 	 * Date Created		: 
 	 * **********************************************
 	 */
-	public int getRowNumber(String filePath, String sheetName)
+	public int getRowNumber(String filePath, String sheetName, String resultLocation, ExtentTest test)
 	{
 		FileInputStream fin = null;
 		Workbook wb = null;
@@ -44,7 +47,7 @@ public class Datatable extends DriverScript{
 			sh = wb.getSheet(sheetName);
 			
 			if(sh==null) {
-				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist", test);
+				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist", resultLocation, test);
 				return -1;
 			}
 			
@@ -52,7 +55,7 @@ public class Datatable extends DriverScript{
 			return rowCount;
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in getRowNumber() method. "+e.getMessage(), test);
+			reports.writeResult(null, "Exception", "Exception in getRowNumber() method. "+e.getMessage(), resultLocation, test);
 			return -1;
 		}
 		finally
@@ -65,7 +68,7 @@ public class Datatable extends DriverScript{
 				wb = null;
 			}catch(Exception e)
 			{
-				reports.writeResult(null, "Exception", "Exception in getRowNumber() method. "+e.getMessage(), test);
+				reports.writeResult(null, "Exception", "Exception in getRowNumber() method. "+e.getMessage(), resultLocation, test);
 			}
 		}
 	}
@@ -80,12 +83,12 @@ public class Datatable extends DriverScript{
 	 * Purpose			: to read the cell data form the excel file
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: filePath, sheetName, colName, rowNum
+	 * Arguments		: String filePath, String sheetName, String colName, int rowNum, String resultLocation, ExtentTest test
 	 * Return type		: String
 	 * Date Created		: 
 	 * **********************************************
 	 */
-	public String getCellData(String filePath, String sheetName, String colName, int rowNum)
+	public String getCellData(String filePath, String sheetName, String colName, int rowNum, String resultLocation, ExtentTest test)
 	{
 		FileInputStream fin = null;
 		Workbook wb = null;
@@ -103,7 +106,7 @@ public class Datatable extends DriverScript{
 			sh = wb.getSheet(sheetName);
 			
 			if(sh==null) {
-				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist", test);
+				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist", resultLocation, test);
 				return null;
 			}
 			
@@ -163,7 +166,7 @@ public class Datatable extends DriverScript{
 			return strData;
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in getCellData() method. "+e.getMessage(), test);
+			reports.writeResult(null, "Exception", "Exception in getCellData() method. "+e.getMessage(), resultLocation, test);
 			return null;
 		}
 		finally
@@ -178,7 +181,7 @@ public class Datatable extends DriverScript{
 				wb = null;
 			}catch(Exception e)
 			{
-				reports.writeResult(null, "Exception", "Exception in getCellData() method. "+e.getMessage(), test);
+				reports.writeResult(null, "Exception", "Exception in getCellData() method. "+e.getMessage(), resultLocation, test);
 				return null;
 			}
 		}
@@ -216,7 +219,7 @@ public class Datatable extends DriverScript{
 			sh = wb.getSheet(sheetName);
 			
 			if(sh==null) {
-				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist", test);
+				System.out.println("The sheet '"+sheetName+"' doesnot exist. Hence cannot continue setCellData() method");
 				return;
 			}
 			
@@ -278,7 +281,7 @@ public class Datatable extends DriverScript{
 			
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in setCellData() method. "+e.getMessage(), test);
+			System.out.println("Exception in setCellData() method. "+e.getMessage());
 		}
 		finally
 		{
@@ -292,7 +295,7 @@ public class Datatable extends DriverScript{
 				wb = null;
 			}catch(Exception e)
 			{
-				reports.writeResult(null, "Exception", "Exception in setCellData() method. "+e.getMessage(), test);
+				System.out.println("Exception in setCellData() method. "+e.getMessage());
 			}
 		}
 	}
@@ -307,12 +310,12 @@ public class Datatable extends DriverScript{
 	 * Purpose			: to read the data from the excel based on logicalName
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: keyName
+	 * Arguments		: String sheetName, String logicalName, String strModuleName, String resultLocation, ExtentTest test
 	 * Return type		: String
 	 * Date Created		: 
 	 * **********************************************
 	 */
-	public Map<String, String> getExcelTestData(String sheetName, String logicalName)
+	public Map<String, String> getExcelTestData(String sheetName, String logicalName, String strModuleName, String resultLocation, ExtentTest test)
 	{
 		FileInputStream fin = null;
 		Workbook wb = null;
@@ -334,7 +337,7 @@ public class Datatable extends DriverScript{
 			wb = new XSSFWorkbook(fin);
 			sh = wb.getSheet(sheetName);
 			if(sh==null) {
-				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist. Hence can't read the test data", test);
+				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist. Hence can't read the test data", resultLocation, test);
 				return null;
 			}
 			
@@ -403,16 +406,16 @@ public class Datatable extends DriverScript{
 					}
 					objData.put(key, value);
 				}
-				reports.writeResult(null, "Pass", "The testdata was read from the '"+sheetName+"' sheet under '"+strModuleName+".xlsx"+"' file", test);
+				reports.writeResult(null, "Pass", "The testdata was read from the '"+sheetName+"' sheet under '"+strModuleName+".xlsx"+"' file", resultLocation, test);
 				return objData;
 			}else {
-				reports.writeResult(null, "Fail", "Failed to find the logical name '"+logicalName+"' in the test data sheet", test);
+				reports.writeResult(null, "Fail", "Failed to find the logical name '"+logicalName+"' in the test data sheet", resultLocation, test);
 				return null;
 			}
 			
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in getExcelData() method. "+e.getMessage(), test);
+			reports.writeResult(null, "Exception", "Exception in getExcelData() method. "+e.getMessage(), resultLocation, test);
 			return null;
 		}
 		finally
@@ -429,7 +432,7 @@ public class Datatable extends DriverScript{
 				wb = null;
 			}catch(Exception e)
 			{
-				reports.writeResult(null, "Exception", "Exception in getExcelData() method. "+e.getMessage(), test);
+				reports.writeResult(null, "Exception", "Exception in getExcelData() method. "+e.getMessage(), resultLocation, test);
 				return null;
 			}
 		}
@@ -440,8 +443,9 @@ public class Datatable extends DriverScript{
 	
 	/*********************************************
 	 * Method Name	: createDataProvider()
-	 * Author		: Gudi
+	 * Author		: 
 	 * Purpose		: to read data from excel and create a dataProvider
+	 * Arguments	: String strFileName, String strSheetName
 	 * Date created	: 
 	 * 
 	 * *******************************************

@@ -11,56 +11,66 @@ import com.relevantcodes.extentreports.LogStatus;
 import driver.DriverScript;
 
 public class ReportUtils extends DriverScript{
+	
+	/****************************************************************
+	 * Method Name	: createResultDirectories
+	 * Purpose		: To create the directory structure the the test scripts results
+	 * Author		: 
+	 * Parameters	: String buildNum, String moduleName, String testCaseID
+	 * Return Type	: String
+	 * 
+	 ****************************************************************/
+	public String createResultDirectories(String buildNum, String moduleName, String testCaseID) {
+		File objFileDir = null;
+		String resultDir = null;
+		try {
+			resultDir = System.getProperty("user.dir")+"\\Results\\"+buildNum+"\\"+moduleName+"\\"+testCaseID;
+			objFileDir = new File(resultDir);
+			if(!objFileDir.exists()) {
+				objFileDir.mkdirs();
+			}
+			
+			return resultDir;
+		}catch(Exception e)
+		{
+			System.out.println("Exception in createResultDirectories() method. "+e.getMessage());
+			return null;
+		}
+		finally {
+			objFileDir = null;
+			resultDir = null;
+		}
+	}
+	
+	
+	
+	
+	
+	
 	/****************************************************************
 	 * Method Name	: startReport
 	 * Purpose		: To start the extentReport mechanism
 	 * Author		: 
-	 * Parameters	: String fileName, String scenarioName, String strBuildNum
+	 * Parameters	: String strResultLocation
 	 * Return Type	: ExtentReports
 	 * 
 	 ****************************************************************/
-	public ExtentReports startReport(String fileName, String scenarioName, String strBuildNum)
+	public ExtentReports startReport(String strResultLocation, String fileName)
 	{
-		String strPath = null;
-		File objResLocation = null;
-		File objScreenShot = null;
-		try {
-			strPath = System.getProperty("user.dir")+"\\Results";
-			
-			
-			strResultLocation = strPath +"\\"+strBuildNum+"\\"+strModuleName+"\\"+scenarioName;
-			strScreenshotLocation = strResultLocation+"\\screenshots";
-						
-			
-			//Create the result dir
-			objResLocation = new File(strResultLocation);
-			if(!objResLocation.exists()) {
-				objResLocation.mkdirs();
-			}
-			
-			//Create screenshot dir
-			objScreenShot = new File(strScreenshotLocation);
-			if(!objScreenShot.exists())
-			{
-				objScreenShot.mkdir();
-			}
-			
+		ExtentReports extentReport = null;
+		try {		
 			//Create a object for extent resports
-			extent = new ExtentReports(strResultLocation + "\\" + fileName + "_" + appInd.getDataTime("ddMMYYYY_hhmmss")+".html", true);
-			extent.addSystemInfo("Host Name", System.getProperty("os.name"));
-			extent.addSystemInfo("Environment", appInd.readPropData("Environment"));
-			extent.addSystemInfo("AppName", appInd.readPropData("AppName"));
-			extent.addSystemInfo("User Name", System.getProperty("user.name"));
-			extent.loadConfig(new File(System.getProperty("user.dir")+"\\extent-config.xml"));
-			return extent;
+			extentReport = new ExtentReports(strResultLocation + "\\" + fileName + "_" + appInd.getDataTime("ddMMYYYY_hhmmss")+".html", true);
+			extentReport.addSystemInfo("Host Name", System.getProperty("os.name"));
+			extentReport.addSystemInfo("Environment", appInd.readPropData("Environment"));
+			extentReport.addSystemInfo("AppName", appInd.readPropData("AppName"));
+			extentReport.addSystemInfo("User Name", System.getProperty("user.name"));
+			extentReport.loadConfig(new File(System.getProperty("user.dir")+"\\extent-config.xml"));
+			return extentReport;
 		}catch(Exception e)
 		{
 			System.out.println("Exception in startReport() method. "+e.getMessage());
 			return null;
-		}
-		finally {
-			objResLocation = null;
-			objScreenShot = null;
 		}
 	}
 	
@@ -75,7 +85,7 @@ public class ReportUtils extends DriverScript{
 	 * Return Type	: void
 	 * 
 	 ****************************************************************/
-	public void endTest(ExtentTest test)
+	public void endTest(ExtentReports extent, ExtentTest test)
 	{
 		try {
 			extent.endTest(test);
@@ -93,20 +103,28 @@ public class ReportUtils extends DriverScript{
 	 * Method Name	: getScreenshot
 	 * Purpose		: To catpture the screen shot
 	 * Author		: 
-	 * Parameters	: WebDriver oDriver
+	 * Parameters	: WebDriver oDriver, String resultLocation
 	 * Return Type	: String
 	 * 
 	 ****************************************************************/
-	public String getScreenshot(WebDriver oDriver)
+	public String getScreenshot(WebDriver oDriver, String resultLocation)
 	{
 		File objSource = null;
 		String destination = null;
 		File objDest = null;
+		File resultDir = null;
 		try {
+			
+			resultDir = new File(resultLocation+"\\screenshots\\");
+			if(!resultDir.exists()) {
+				resultDir.mkdir();
+			}
+			
 			TakesScreenshot ts = (TakesScreenshot) oDriver;
 			objSource = ts.getScreenshotAs(OutputType.FILE);
-			destination = strScreenshotLocation+"\\"+"screenshot_"+appInd.getDataTime("ddMMYYYY_hhmmss")+".png";
+			destination = resultLocation+"\\screenshots\\"+"screenshot_"+appInd.getDataTime("ddMMYYYY_hhmmss")+".png";
 			objDest = new File(destination);
+			
 			FileHandler.copy(objSource, objDest);
 			return destination;
 		}catch(Exception e)
@@ -117,6 +135,7 @@ public class ReportUtils extends DriverScript{
 		finally {
 			objSource = null;
 			objDest = null;
+			resultDir = null;
 		}
 	}
 	
@@ -130,7 +149,7 @@ public class ReportUtils extends DriverScript{
 	 * Return Type	: String
 	 * 
 	 ****************************************************************/
-	public void writeResult(WebDriver oDriver, String status, String description, ExtentTest test)
+	public void writeResult(WebDriver oDriver, String status, String description, String resultLocation, ExtentTest test)
 	{
 		try {
 			switch(status.toLowerCase())
@@ -142,7 +161,7 @@ public class ReportUtils extends DriverScript{
 					if(oDriver==null) {
 						test.log(LogStatus.FAIL, description);
 					}else {
-						test.log(LogStatus.FAIL, description+": "+test.addScreenCapture(reports.getScreenshot(oDriver)));
+						test.log(LogStatus.FAIL, description+": "+test.addScreenCapture(reports.getScreenshot(oDriver, resultLocation)));
 					}
 					break;
 				case "info":
@@ -152,14 +171,14 @@ public class ReportUtils extends DriverScript{
 					if(oDriver==null) {
 						test.log(LogStatus.FATAL, description);
 					}else {
-						test.log(LogStatus.FATAL, description+": "+test.addScreenCapture(reports.getScreenshot(oDriver)));
+						test.log(LogStatus.FATAL, description+": "+test.addScreenCapture(reports.getScreenshot(oDriver, resultLocation)));
 					}
 					break;
 				case "warning":
 					test.log(LogStatus.WARNING, description);
 					break;
 				case "screenshot":
-					test.log(LogStatus.INFO, description+": "+test.addScreenCapture(reports.getScreenshot(oDriver)));
+					test.log(LogStatus.INFO, description+": "+test.addScreenCapture(reports.getScreenshot(oDriver, resultLocation)));
 					break;
 				default:
 					System.out.println("Invalid status '"+status+"' was mentioned");
