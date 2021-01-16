@@ -2,14 +2,9 @@ package driver;
 
 import java.lang.reflect.Method;
 import java.util.Hashtable;
-import java.util.Map;
-
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import com.relevantcodes.extentreports.ExtentReports;
-import com.relevantcodes.extentreports.ExtentTest;
 import methods.AppDependentMethods;
 import methods.AppIndependentMethods;
 import methods.CompanyModuleMethods;
@@ -22,13 +17,7 @@ public class DriverScript {
 	public static AppIndependentMethods appInd = null;
 	public static AppDependentMethods appDep = null;
 	public static Datatable datatable = null;
-	public static ExtentReports extent = null;
-	public static ExtentTest test = null;
-	public static ReportUtils reports = null;
-	public static String strResultLocation = null;
-	public static String strScreenshotLocation = null;
-	public static String strModuleName = null;
-	public static String strTestCaseID = null;
+	public static ReportUtils reports = null;	
 	public static UserModuleMethods userModule = null;
 	public static CompanyModuleMethods companyModule = null;
 	public static ProjectModuleMethods projectModule = null;
@@ -66,17 +55,24 @@ public class DriverScript {
 		Class cls = null;
 		Object obj = null;
 		Method meth = null;
-		Hashtable<String, String> data = null;
 		String status = null;
 		int count = 0;
-		try {
+		String strModuleName = null;
+		String strTestCaseID = null;
+		Class resultInfo[] = null;
+		try {			
+			resultInfo = new Class[2];
+			resultInfo[0] = String.class;
+			resultInfo[1] = String.class;
+			
+			
 			cls = Class.forName(objData.get("ClassName"));
 			obj = cls.newInstance();
-			meth = obj.getClass().getMethod(objData.get("TestScriptName"));
+			meth = obj.getClass().getMethod(objData.get("TestScriptName"), resultInfo);
 			strTestCaseID = objData.get("TestCaseID");
 			strModuleName = objData.get("ModuleName");
 			
-			status = String.valueOf(meth.invoke(obj));
+			status = String.valueOf(meth.invoke(obj, strModuleName, strTestCaseID));
 			
 			if(status.equals("true")) {
 				datatable.setCellData(controller, "ExecuteTest", "Status", objData.get("TestScriptName"), "Passed");
@@ -91,7 +87,6 @@ public class DriverScript {
 			cls = null;
 			obj = null;
 			meth = null;
-			data = null;
 		}
 	}
 }

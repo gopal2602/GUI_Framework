@@ -18,7 +18,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import com.relevantcodes.extentreports.ExtentTest;
 import driver.DriverScript;
 
 public class AppIndependentMethods extends DriverScript{
@@ -40,7 +40,7 @@ public class AppIndependentMethods extends DriverScript{
 			return sdf.format(dt);
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in getDataTime() method. "+e.getMessage(), test);
+			System.out.println("Exception in getDataTime() method. "+e.getMessage());
 			return null;
 		}
 		finally {
@@ -71,7 +71,7 @@ public class AppIndependentMethods extends DriverScript{
 			return prop.getProperty(strKey);
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in readPropData() method. "+e.getMessage(), test);
+			System.out.println("Exception in readPropData() method. "+e.getMessage());
 			return null;
 		}
 		finally
@@ -82,7 +82,7 @@ public class AppIndependentMethods extends DriverScript{
 				prop = null;
 			}catch(Exception e)
 			{
-				reports.writeResult(null, "Exception", "Exception in readPropData() method. "+e.getMessage(), test);
+				System.out.println("Exception in readPropData() method. "+e.getMessage());
 				return null;
 			}
 		}
@@ -95,16 +95,15 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to launch the required browsers
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: browserName
+	 * Arguments		: String browserName, String resultLocation. ExtentTest test
 	 * Return type		: WebDriver
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public WebDriver launchApp(String browserName)
+	public WebDriver launchApp(String browserName, String resultLocation, ExtentTest test)
 	{
 		WebDriver oDriver = null;
 		try {
-			test = extent.startTest("launchApp");
 			switch(browserName.toLowerCase())
 			{
 				case "chrome":
@@ -123,20 +122,20 @@ public class AppIndependentMethods extends DriverScript{
 					oDriver = new InternetExplorerDriver();
 					break;
 				default:
-					reports.writeResult(oDriver, "Fail", "Invalid browser name '"+browserName+"'", test);
+					reports.writeResult(oDriver, "Fail", "Invalid browser name '"+browserName+"'", resultLocation, test);
 			}
 			
 			if(oDriver!=null) {
-				reports.writeResult(oDriver, "Pass", "The '"+browserName+"' browser was launched successful", test);
+				reports.writeResult(oDriver, "Pass", "The '"+browserName+"' browser was launched successful", resultLocation, test);
 				oDriver.manage().window().maximize();
 				return oDriver;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to launch the '"+browserName+"' browser", test);
+				reports.writeResult(oDriver, "Fail", "Failed to launch the '"+browserName+"' browser", resultLocation, test);
 				return null;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in launchApp() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in launchApp() method. "+e.getMessage(), resultLocation, test);
 			return null;
 		}
 	}
@@ -149,19 +148,19 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to close the browser
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver
+	 * Arguments		: WebDriver oDriver, String resultLocation, ExtentTest test
 	 * Return type		: void
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public void closeBrowser(WebDriver oDriver)
+	public void closeBrowser(WebDriver oDriver, String resultLocation, ExtentTest test)
 	{
 		try {
 			oDriver.close();
 			oDriver = null;
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in closeBrowser() method. "+e.getMessage(), test);
+			reports.writeResult(null, "Exception", "Exception in closeBrowser() method. "+e.getMessage(), resultLocation, test);
 		}
 	}
 	
@@ -173,12 +172,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to click the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By
+	 * Arguments		: WebDriver oDriver, By objBy, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean clickObject(WebDriver oDriver, By objBy)
+	public boolean clickObject(WebDriver oDriver, By objBy, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
@@ -186,15 +185,15 @@ public class AppIndependentMethods extends DriverScript{
 			
 			if(oEles.size() > 0) {
 				oEles.get(0).click();
-				reports.writeResult(oDriver, "Pass", "The Element '"+String.valueOf(objBy)+"' was licked successful.", test);
+				reports.writeResult(oDriver, "Pass", "The Element '"+String.valueOf(objBy)+"' was licked successful.", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to click as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to click as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in clickObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in clickObject() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -210,12 +209,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to click the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By
+	 * Arguments		: WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean clickObject(WebDriver oDriver, String strObjectName)
+	public boolean clickObject(WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
@@ -223,15 +222,15 @@ public class AppIndependentMethods extends DriverScript{
 			
 			if(oEles.size() > 0) {
 				oEles.get(0).click();
-				reports.writeResult(oDriver, "Pass", "The Element '"+strObjectName+"' was licked successful.", test);
+				reports.writeResult(oDriver, "Pass", "The Element '"+strObjectName+"' was licked successful.", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to click as the Element '"+strObjectName+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to click as the Element '"+strObjectName+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in clickObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in clickObject() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -247,12 +246,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to enter the value in the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By, strData
+	 * Arguments		: WebDriver oDriver, By objBy, String strData, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean setObject(WebDriver oDriver, By objBy, String strData)
+	public boolean setObject(WebDriver oDriver, By objBy, String strData, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
@@ -260,15 +259,15 @@ public class AppIndependentMethods extends DriverScript{
 			
 			if(oEles.size() > 0) {
 				oEles.get(0).sendKeys(strData);
-				reports.writeResult(oDriver, "Pass", "The data '"+strData+"' was entered in the Element '"+String.valueOf(objBy)+"' successful", test);
+				reports.writeResult(oDriver, "Pass", "The data '"+strData+"' was entered in the Element '"+String.valueOf(objBy)+"' successful", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to Enter the data '"+strData+"' as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to Enter the data '"+strData+"' as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in setObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in setObject() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -284,12 +283,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to enter the value in the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By, strData
+	 * Arguments		: WebDriver oDriver, String strObjectName, String strData, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean setObject(WebDriver oDriver, String strObjectName, String strData)
+	public boolean setObject(WebDriver oDriver, String strObjectName, String strData, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
@@ -297,15 +296,15 @@ public class AppIndependentMethods extends DriverScript{
 			
 			if(oEles.size() > 0) {
 				oEles.get(0).sendKeys(strData);
-				reports.writeResult(oDriver, "Pass", "The data '"+strData+"' was entered in the Element '"+strObjectName+"' successful", test);
+				reports.writeResult(oDriver, "Pass", "The data '"+strData+"' was entered in the Element '"+strObjectName+"' successful", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to Enter the data '"+strData+"' as the Element '"+strObjectName+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to Enter the data '"+strData+"' as the Element '"+strObjectName+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in setObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in setObject() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -322,12 +321,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to validate the element text values
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By, strData, objectType, expectedResult
+	 * Arguments		: WebDriver oDriver, By objBy, String objectType, String expected, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean verifyText(WebDriver oDriver, By objBy, String objectType, String expected)
+	public boolean verifyText(WebDriver oDriver, By objBy, String objectType, String expected, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		Select oSel = null;
@@ -349,21 +348,21 @@ public class AppIndependentMethods extends DriverScript{
 						actual = oSel.getFirstSelectedOption().getText();
 						break;
 					default:
-						reports.writeResult(null, "Fail", "Invalid object type '"+objectType+"' was specified.", test);
+						reports.writeResult(null, "Fail", "Invalid object type '"+objectType+"' was specified.", resultLocation, test);
 				}
 				
-				if(appInd.compareValues(oDriver, actual, expected)) {
+				if(appInd.compareValues(oDriver, actual, expected, resultLocation, test)) {
 					return true;
 				}else {
 					return false;
 				}
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to validate the text as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to validate the text as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in verifyText() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in verifyText() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -380,12 +379,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to validate the element text values
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By, strData, objectType, expectedResult
+	 * Arguments		: WebDriver oDriver, String strObjectName, String objectType, String expected, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean verifyText(WebDriver oDriver, String strObjectName, String objectType, String expected)
+	public boolean verifyText(WebDriver oDriver, String strObjectName, String objectType, String expected, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		Select oSel = null;
@@ -407,21 +406,21 @@ public class AppIndependentMethods extends DriverScript{
 						actual = oSel.getFirstSelectedOption().getText();
 						break;
 					default:
-						reports.writeResult(null, "Fail", "Invalid object type '"+objectType+"' was specified.", test);
+						reports.writeResult(null, "Fail", "Invalid object type '"+objectType+"' was specified.", resultLocation, test);
 				}
 				
-				if(appInd.compareValues(oDriver, actual, expected)) {
+				if(appInd.compareValues(oDriver, actual, expected, resultLocation, test)) {
 					return true;
 				}else {
 					return false;
 				}
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to validate the text as the Element '"+strObjectName+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to validate the text as the Element '"+strObjectName+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in verifyText() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in verifyText() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -438,24 +437,24 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to compare both actual and expected values
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: actual, expected
+	 * Arguments		: WebDriver oDriver, String actual, String expected, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean compareValues(WebDriver oDriver, String actual, String expected)
+	public boolean compareValues(WebDriver oDriver, String actual, String expected, String resultLocation, ExtentTest test)
 	{
 		try {
 			if(actual.equalsIgnoreCase(expected)) {
-				reports.writeResult(oDriver, "Pass", "Both actual '"+actual+"' & expected '"+expected+"' values are matched", test);
+				reports.writeResult(oDriver, "Pass", "Both actual '"+actual+"' & expected '"+expected+"' values are matched", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Mis-match in both actual '"+actual+"' & expected '"+expected+"' values", test);
+				reports.writeResult(oDriver, "Fail", "Mis-match in both actual '"+actual+"' & expected '"+expected+"' values", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in compareValues() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in compareValues() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 	}
@@ -469,26 +468,26 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to check for the presence of the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By
+	 * Arguments		: WebDriver oDriver, By objBy, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean verifyElementExist(WebDriver oDriver, By objBy)
+	public boolean verifyElementExist(WebDriver oDriver, By objBy, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
 			oEles = oDriver.findElements(objBy);
 			if(oEles.size() > 0) {
-				reports.writeResult(oDriver, "Pass", "The element '"+String.valueOf(objBy)+"' was present in the DOM", test);
+				reports.writeResult(oDriver, "Pass", "The element '"+String.valueOf(objBy)+"' was present in the DOM", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "The element '"+String.valueOf(objBy)+"' DOESNOT present in the DOM", test);
+				reports.writeResult(oDriver, "Fail", "The element '"+String.valueOf(objBy)+"' DOESNOT present in the DOM", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in verifyElementExist() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in verifyElementExist() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -504,26 +503,26 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to check for the presence of the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By
+	 * Arguments		: WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean verifyElementExist(WebDriver oDriver, String strObjectName)
+	public boolean verifyElementExist(WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
 			oEles = oDriver.findElements(By.xpath(strObjectName));
 			if(oEles.size() > 0) {
-				reports.writeResult(oDriver, "Pass", "The element '"+strObjectName+"' was present in the DOM", test);
+				reports.writeResult(oDriver, "Pass", "The element '"+strObjectName+"' was present in the DOM", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "The element '"+strObjectName+"' DOESNOT present in the DOM", test);
+				reports.writeResult(oDriver, "Fail", "The element '"+strObjectName+"' DOESNOT present in the DOM", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in verifyElementExist() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in verifyElementExist() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -540,26 +539,26 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to check for the invisibility of the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By
+	 * Arguments		: WebDriver oDriver, By objBy, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean verifyElementNotExist(WebDriver oDriver, By objBy)
+	public boolean verifyElementNotExist(WebDriver oDriver, By objBy, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
 			oEles = oDriver.findElements(objBy);
 			if(oEles.size() == 0) {
-				reports.writeResult(oDriver, "Pass", "The element '"+String.valueOf(objBy)+"' Not present in the DOM", test);
+				reports.writeResult(oDriver, "Pass", "The element '"+String.valueOf(objBy)+"' Not present in the DOM", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "The element '"+String.valueOf(objBy)+"' present in the DOM", test);
+				reports.writeResult(oDriver, "Fail", "The element '"+String.valueOf(objBy)+"' present in the DOM", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in verifyElementNotExist() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in verifyElementNotExist() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -575,26 +574,26 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to check for the invisibility of the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By
+	 * Arguments		: WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean verifyElementNotExist(WebDriver oDriver, String strObjectName)
+	public boolean verifyElementNotExist(WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
 			oEles = oDriver.findElements(By.xpath(strObjectName));
 			if(oEles.size() == 0) {
-				reports.writeResult(oDriver, "Pass", "The element '"+strObjectName+"' Not present in the DOM", test);
+				reports.writeResult(oDriver, "Pass", "The element '"+strObjectName+"' Not present in the DOM", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "The element '"+strObjectName+"' present in the DOM", test);
+				reports.writeResult(oDriver, "Fail", "The element '"+strObjectName+"' present in the DOM", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in verifyElementNotExist() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in verifyElementNotExist() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -611,12 +610,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to check for the optional element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By
+	 * Arguments		: WebDriver oDriver, By objBy, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean verifyOptionalElement(WebDriver oDriver, By objBy)
+	public boolean verifyOptionalElement(WebDriver oDriver, By objBy, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
@@ -628,7 +627,7 @@ public class AppIndependentMethods extends DriverScript{
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in verifyOptionalElement() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in verifyOptionalElement() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -639,17 +638,18 @@ public class AppIndependentMethods extends DriverScript{
 	
 	
 	
+	
 	/************************************************
 	 * Method Name		: verifyOptionalElement()
 	 * Purpose			: to check for the optional element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By
+	 * Arguments		: WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean verifyOptionalElement(WebDriver oDriver, String strObjectName)
+	public boolean verifyOptionalElement(WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		try {
@@ -661,7 +661,7 @@ public class AppIndependentMethods extends DriverScript{
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in verifyOptionalElement() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in verifyOptionalElement() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -676,12 +676,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to enter the value in the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By, strData
+	 * Arguments		: WebDriver oDriver, By objBy, String strData, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean selectObject(WebDriver oDriver, By objBy, String strData)
+	public boolean selectObject(WebDriver oDriver, By objBy, String strData, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		Select oSel = null;
@@ -691,15 +691,15 @@ public class AppIndependentMethods extends DriverScript{
 			if(oEles.size() > 0) {
 				oSel = new Select(oEles.get(0));
 				oSel.selectByVisibleText(strData);
-				reports.writeResult(oDriver, "Pass", "The data '"+strData+"' was selected from the Element '"+String.valueOf(objBy)+"' successful", test);
+				reports.writeResult(oDriver, "Pass", "The data '"+strData+"' was selected from the Element '"+String.valueOf(objBy)+"' successful", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to select the data '"+strData+"' as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to select the data '"+strData+"' as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in selectObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in selectObject() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -715,12 +715,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to enter the value in the element
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By, strData
+	 * Arguments		: WebDriver oDriver, String strObjectName, String strData, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean selectObject(WebDriver oDriver, String strObjectName, String strData)
+	public boolean selectObject(WebDriver oDriver, String strObjectName, String strData, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		Select oSel = null;
@@ -730,21 +730,24 @@ public class AppIndependentMethods extends DriverScript{
 			if(oEles.size() > 0) {
 				oSel = new Select(oEles.get(0));
 				oSel.selectByVisibleText(strData);
-				reports.writeResult(oDriver, "Pass", "The data '"+strData+"' was selected from the Element '"+strObjectName+"' successful", test);
+				reports.writeResult(oDriver, "Pass", "The data '"+strData+"' was selected from the Element '"+strObjectName+"' successful", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to select the data '"+strData+"' as the Element '"+strObjectName+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to select the data '"+strData+"' as the Element '"+strObjectName+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in selectObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in selectObject() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
 			oEles = null;
 		}
 	}
+	
+	
+	
 	
 	
 	
@@ -919,11 +922,11 @@ public class AppIndependentMethods extends DriverScript{
 	 * Method Name	: getElementText
 	 * Purpose		: To get the text/value present on the element
 	 * Author		: 
-	 * Parameters	: WebDriver oDriver, By objBy, String objectType
+	 * Parameters	: WebDriver oDriver, By objBy, String objectType, String resultLocation, ExtentTest test
 	 * Return Type	: String
 	 * 
 	 ****************************************************************/
-	public String getElementText(WebDriver oDriver, By objBy, String objectType)
+	public String getElementText(WebDriver oDriver, By objBy, String objectType, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		String strText = null;
@@ -942,18 +945,18 @@ public class AppIndependentMethods extends DriverScript{
 						oSel = new Select(oEles.get(0));
 						strText = oSel.getFirstSelectedOption().getText();
 					default:
-						reports.writeResult(oDriver, "Fail", "Invalid object type '"+objectType+"' was specified.", test);
+						reports.writeResult(oDriver, "Fail", "Invalid object type '"+objectType+"' was specified.", resultLocation, test);
 						return null;
 				}
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to find the Element '"+String.valueOf(objBy)+"' in the DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to find the Element '"+String.valueOf(objBy)+"' in the DOM.", resultLocation, test);
 				return null;
 			}
 			
 			return strText;
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in selectObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in selectObject() method. "+e.getMessage(), resultLocation, test);
 			return null;
 		}
 		finally {
@@ -971,11 +974,11 @@ public class AppIndependentMethods extends DriverScript{
 	 * Method Name	: getElementText
 	 * Purpose		: To get the text/value present on the element
 	 * Author		: 
-	 * Parameters	: WebDriver oDriver, String strObjectName, String objectType
+	 * Parameters	: WebDriver oDriver, String strObjectName, String objectType, String resultLocation, ExtentTest test
 	 * Return Type	: String
 	 * 
 	 ****************************************************************/
-	public String getElementText(WebDriver oDriver, String strObjectName, String objectType)
+	public String getElementText(WebDriver oDriver, String strObjectName, String objectType, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		String strText = null;
@@ -994,18 +997,18 @@ public class AppIndependentMethods extends DriverScript{
 						oSel = new Select(oEles.get(0));
 						strText = oSel.getFirstSelectedOption().getText();
 					default:
-						reports.writeResult(oDriver, "Fail", "Invalid object type '"+objectType+"' was specified.", test);
+						reports.writeResult(oDriver, "Fail", "Invalid object type '"+objectType+"' was specified.", resultLocation, test);
 						return null;
 				}
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to find the Element '"+strObjectName+"' in the DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to find the Element '"+strObjectName+"' in the DOM.", resultLocation, test);
 				return null;
 			}
 			
 			return strText;
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in selectObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in selectObject() method. "+e.getMessage(), resultLocation, test);
 			return null;
 		}
 		finally {
@@ -1018,17 +1021,18 @@ public class AppIndependentMethods extends DriverScript{
 	
 	
 	
+	
 	/************************************************
 	 * Method Name		: javaScriptclickObject()
 	 * Purpose			: to click the element using JavaScriptExecutor
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver, By
+	 * Arguments		: WebDriver oDriver, By objBy, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean javaScriptclickObject(WebDriver oDriver, By objBy)
+	public boolean javaScriptclickObject(WebDriver oDriver, By objBy, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		JavascriptExecutor js = null;
@@ -1037,15 +1041,15 @@ public class AppIndependentMethods extends DriverScript{
 			js = (JavascriptExecutor) oDriver;
 			if(oEles.size() > 0) {
 				js.executeScript("arguments[0].click();", oEles.get(0));
-				reports.writeResult(oDriver, "Pass", "The Element '"+String.valueOf(objBy)+"' was licked successful.", test);
+				reports.writeResult(oDriver, "Pass", "The Element '"+String.valueOf(objBy)+"' was licked successful.", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to click as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to click as the Element '"+String.valueOf(objBy)+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in javaScriptclickObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in javaScriptclickObject() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
@@ -1061,12 +1065,12 @@ public class AppIndependentMethods extends DriverScript{
 	 * Purpose			: to click the element using JavaScriptExecutor
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: WebDriver oDriver, String strObjectName
+	 * Arguments		: WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test
 	 * Return type		: boolean
 	 * Date Created		:
 	 * **********************************************
 	 */
-	public boolean javaScriptclickObject(WebDriver oDriver, String strObjectName)
+	public boolean javaScriptclickObject(WebDriver oDriver, String strObjectName, String resultLocation, ExtentTest test)
 	{
 		List<WebElement> oEles = null;
 		JavascriptExecutor js = null;
@@ -1075,15 +1079,15 @@ public class AppIndependentMethods extends DriverScript{
 			js = (JavascriptExecutor) oDriver;
 			if(oEles.size() > 0) {
 				js.executeScript("arguments[0].click();", oEles.get(0));
-				reports.writeResult(oDriver, "Pass", "The Element '"+strObjectName+"' was licked successful.", test);
+				reports.writeResult(oDriver, "Pass", "The Element '"+strObjectName+"' was licked successful.", resultLocation, test);
 				return true;
 			}else {
-				reports.writeResult(oDriver, "Fail", "Failed to click as the Element '"+strObjectName+"' doesnot exist in DOM.", test);
+				reports.writeResult(oDriver, "Fail", "Failed to click as the Element '"+strObjectName+"' doesnot exist in DOM.", resultLocation, test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oDriver, "Exception", "Exception in javaScriptclickObject() method. "+e.getMessage(), test);
+			reports.writeResult(oDriver, "Exception", "Exception in javaScriptclickObject() method. "+e.getMessage(), resultLocation, test);
 			return false;
 		}
 		finally {
