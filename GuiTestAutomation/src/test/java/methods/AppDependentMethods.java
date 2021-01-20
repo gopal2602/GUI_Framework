@@ -21,7 +21,7 @@ public class AppDependentMethods extends DriverScript implements ObjectLocators{
 			oDriver.navigate().to(URL);
 			appInd.waitFor(oDriver, obj_Login_btn, "Clickable", "", 5);
 			
-			if(appInd.compareValues(oDriver, oDriver.getTitle(), "SGSoftwareTesting", resultLocation, test))
+			if(appInd.compareValues(oDriver, oDriver.getTitle(), "Gowri Soft", resultLocation, test))
 			{
 				return true;
 			}else {
