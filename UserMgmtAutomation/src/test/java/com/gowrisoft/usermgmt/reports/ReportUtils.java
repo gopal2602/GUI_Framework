@@ -5,188 +5,166 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.io.FileHandler;
-
 import com.gowrisoft.usermgmt.driver.DriverScript;
 import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 
+
 public class ReportUtils extends DriverScript{
-	
-	/****************************************************************
-	 * Method Name	: createResultDirectories
-	 * Purpose		: To create the directory structure the the test scripts results
-	 * Author		: 
-	 * Parameters	: String buildNum, String moduleName, String testCaseID
-	 * Return Type	: String
+	/***********************************************************
+	 * Method Name			: startExtentReport()
+	 * Author Name			: 
+	 * Purpose				: It is to start the extentReporting directories and files
+	 * Arguments			: String fileName, String buildName
+	 * Return Type			: ExtentReports
 	 * 
-	 ****************************************************************/
-	public String createResultDirectories(String buildNum, String moduleName, String testCaseID) {
-		File objFileDir = null;
-		String resultDir = null;
+	 ************************************************************/
+	public ExtentReports startExtentReport(String fileName, String buildName)
+	{
+		String resultPath = null;
+		File objResPath = null; 
+		File objScreenShot = null;
+		File objArchive = null;
+		File objResultFile = null;
 		try {
-			resultDir = System.getProperty("user.dir")+"\\Results\\"+buildNum+"\\"+moduleName+"\\"+testCaseID;
-			objFileDir = new File(resultDir);
-			if(!objFileDir.exists()) {
-				objFileDir.mkdirs();
+			resultPath = System.getProperty("user.dir")+"\\Results\\"+buildName;
+			
+			objResPath = new File(resultPath);
+			if(!objResPath.exists()) {
+				objResPath.mkdirs();
 			}
 			
-			return resultDir;
+			screenshotLocation = resultPath+"\\screenshot";
+			objScreenShot = new File(screenshotLocation);
+			if(!objScreenShot.exists()) {
+				objScreenShot.mkdirs();
+			}
+			
+			objArchive = new File(resultPath + "\\Archive");
+			if(!objArchive.exists()) {
+				objArchive.mkdir();
+			}
+			
+			objResultFile = new File(objResPath +"\\"+fileName+".html");
+			if(objResultFile.exists()) {
+				objResultFile.renameTo(new File(objArchive+"\\" + buildName+"_"+fileName+appInd.getDateTime("ddMMYYYY_hhmmss")+".html"));
+			}
+			
+			extent = new ExtentReports(objResPath +"\\"+fileName+".html", false);
+			extent.addSystemInfo("Host Name", System.getProperty("os.name"));
+			extent.addSystemInfo("Environment", appInd.readPropData("Environment"));
+			extent.addSystemInfo("User Name", System.getProperty("user.name"));
+			extent.loadConfig(new File(System.getProperty("user.dir")+"\\extent-config.xml"));
+			return extent;
 		}catch(Exception e)
 		{
-			System.out.println("Exception in createResultDirectories() method. "+e.getMessage());
+			System.out.println("Exception in 'startExtentReport()' method. "+e.getMessage());
 			return null;
 		}
 		finally {
-			objFileDir = null;
-			resultDir = null;
+			objResPath = null; 
+			objScreenShot = null;
 		}
 	}
 	
 	
 	
-	
-	
-	
-	/****************************************************************
-	 * Method Name	: startReport
-	 * Purpose		: To start the extentReport mechanism
-	 * Author		: 
-	 * Parameters	: String strResultLocation
-	 * Return Type	: ExtentReports
+	/***********************************************************
+	 * Method Name			: endExtentReport()
+	 * Author Name			: 
+	 * Purpose				: It is to end the extentReporting. So that it will write ot the html file
+	 * Arguments			: ExtentTest test
+	 * Return Type			: void
 	 * 
-	 ****************************************************************/
-	public ExtentReports startReport(String strResultLocation, String fileName)
-	{
-		ExtentReports extentReport = null;
-		try {		
-			//Create a object for extent resports
-			extentReport = new ExtentReports(strResultLocation + "\\" + fileName + "_" + appInd.getDataTime("ddMMYYYY_hhmmss")+".html", true);
-			extentReport.addSystemInfo("Host Name", System.getProperty("os.name"));
-			extentReport.addSystemInfo("Environment", appInd.readPropData("Environment"));
-			extentReport.addSystemInfo("AppName", appInd.readPropData("AppName"));
-			extentReport.addSystemInfo("User Name", System.getProperty("user.name"));
-			extentReport.loadConfig(new File(System.getProperty("user.dir")+"\\extent-config.xml"));
-			return extentReport;
-		}catch(Exception e)
-		{
-			System.out.println("Exception in startReport() method. "+e.getMessage());
-			return null;
-		}
-	}
-	
-	
-	
-	
-	/****************************************************************
-	 * Method Name	: endTest
-	 * Purpose		: To stop the extentReport mechanism
-	 * Author		: 
-	 * Parameters	: ExtentTest test
-	 * Return Type	: void
-	 * 
-	 ****************************************************************/
-	public void endTest(ExtentReports extent, ExtentTest test)
+	 ************************************************************/
+	public void endExtentReport(ExtentTest test)
 	{
 		try {
 			extent.endTest(test);
 			extent.flush();
 		}catch(Exception e)
 		{
-			System.out.println(e);
+			System.out.println("Exception in 'endExtentReport()' method. "+e.getMessage());
 		}
 	}
 	
 	
 	
 	
-	/****************************************************************
-	 * Method Name	: getScreenshot
-	 * Purpose		: To catpture the screen shot
-	 * Author		: 
-	 * Parameters	: WebDriver oDriver, String resultLocation
-	 * Return Type	: String
+	/***********************************************************
+	 * Method Name			: getScreenshot()
+	 * Author Name			: 
+	 * Purpose				: It is to capture the screenshot when required
+	 * Arguments			: WebDriver oBrowser
+	 * Return Type			: String
 	 * 
-	 ****************************************************************/
-	public String getScreenshot(WebDriver oDriver, String resultLocation)
+	 ************************************************************/
+	public String getScreenshot(WebDriver oBrowser)
 	{
 		File objSource = null;
-		String destination = null;
-		File objDest = null;
-		File resultDir = null;
+		String strDestination = null;
+		File objDestination = null;
 		try {
-			
-			resultDir = new File(resultLocation+"\\screenshots\\");
-			if(!resultDir.exists()) {
-				resultDir.mkdir();
-			}
-			
-			TakesScreenshot ts = (TakesScreenshot) oDriver;
+			strDestination = screenshotLocation +"\\"+"screenshot_"+appInd.getDateTime("ddMMYYYY_hhmmss")+".png";
+			TakesScreenshot ts = (TakesScreenshot) oBrowser;
 			objSource = ts.getScreenshotAs(OutputType.FILE);
-			destination = resultLocation+"\\screenshots\\"+"screenshot_"+appInd.getDataTime("ddMMYYYY_hhmmss")+".png";
-			objDest = new File(destination);
 			
-			FileHandler.copy(objSource, objDest);
-			return destination;
+			objDestination = new File(strDestination);
+			FileHandler.copy(objSource, objDestination);
+			
+			return strDestination;
 		}catch(Exception e)
 		{
-			System.out.println("Exception in getScreenshot() method. "+e.getMessage());
+			System.out.println("Exception in 'getScreenshot()' method. "+e.getMessage());
 			return null;
 		}
 		finally {
-			objSource = null;
-			objDest = null;
-			resultDir = null;
+			objSource = null; 
+			objDestination = null;
 		}
 	}
 	
 	
 	
-	/****************************************************************
-	 * Method Name	: writeResult
-	 * Purpose		: To catpture the screen shot
-	 * Author		: 
-	 * Parameters	: WebDriver oDriver, Status, Description, ExtentTest
-	 * Return Type	: String
+	
+	/***********************************************************
+	 * Method Name			: writeResult()
+	 * Author Name			: 
+	 * Purpose				: It is to capture the screenshot when required
+	 * Arguments			: WebDriver oBrowser
+	 * Return Type			: String
 	 * 
-	 ****************************************************************/
-	public void writeResult(WebDriver oDriver, String status, String description, String resultLocation, ExtentTest test)
+	 ************************************************************/
+	public void writeResult(WebDriver oBrowser, String status, String strDescription, ExtentTest test)
 	{
 		try {
 			switch(status.toLowerCase())
 			{
-				case "pass":
-					test.log(LogStatus.PASS, description);
+				case  "pass":
+					test.log(LogStatus.PASS, strDescription);
 					break;
 				case "fail":
-					if(oDriver==null) {
-						test.log(LogStatus.FAIL, description);
-					}else {
-						test.log(LogStatus.FAIL, description+": "+test.addScreenCapture(reports.getScreenshot(oDriver, resultLocation)));
-					}
-					break;
-				case "info":
-					test.log(LogStatus.INFO, description);
-					break;
-				case "exception":
-					if(oDriver==null) {
-						test.log(LogStatus.FATAL, description);
-					}else {
-						test.log(LogStatus.FATAL, description+": "+test.addScreenCapture(reports.getScreenshot(oDriver, resultLocation)));
-					}
+					test.log(LogStatus.FAIL, strDescription + " : " + test.addScreenCapture(reports.getScreenshot(oBrowser)));
 					break;
 				case "warning":
-					test.log(LogStatus.WARNING, description);
+					test.log(LogStatus.WARNING, strDescription);
+					break;
+				case "info":
+					test.log(LogStatus.INFO, strDescription);
+					break;
+				case "exception":
+					test.log(LogStatus.FATAL, strDescription + " : " + test.addScreenCapture(reports.getScreenshot(oBrowser)));
 					break;
 				case "screenshot":
-					test.log(LogStatus.INFO, description+": "+test.addScreenCapture(reports.getScreenshot(oDriver, resultLocation)));
+					test.log(LogStatus.PASS, strDescription + " : " + test.addScreenCapture(reports.getScreenshot(oBrowser)));
 					break;
 				default:
-					System.out.println("Invalid status '"+status+"' was mentioned");
+					System.out.println("Invalid result status '"+status+"'. Please provide appropriate status for result");
 			}
 		}catch(Exception e)
 		{
-			System.out.println("Exception in writeResult() metehod. "+e.getMessage());
+			System.out.println("Exception in 'writeResult()' method. "+e.getMessage());
 		}
 	}
 }

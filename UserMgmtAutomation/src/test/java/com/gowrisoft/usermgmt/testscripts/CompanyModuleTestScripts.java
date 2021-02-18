@@ -2,10 +2,7 @@ package com.gowrisoft.usermgmt.testscripts;
 
 import java.util.Map;
 import org.openqa.selenium.WebDriver;
-
 import com.gowrisoft.usermgmt.driver.DriverScript;
-import com.relevantcodes.extentreports.ExtentReports;
-import com.relevantcodes.extentreports.ExtentTest;
 
 
 public class CompanyModuleTestScripts extends DriverScript{
@@ -24,33 +21,22 @@ public class CompanyModuleTestScripts extends DriverScript{
 		Map<String, String> objData = null;
 		String strStatus = null;
 		String strCompanyName = null;
-		ExtentReports extent = null;
-		ExtentTest test = null;
-		String resultLocation = null;
 		try {
+			test = extent.startTest("TS_Create_Delete_Company");
+			objData = datatable.getExcelTestData("CompanyTestData", "company_101", moduleName, test);
 			
-			resultLocation = reports.createResultDirectories(appInd.readPropData("BuildNumber"), moduleName, testCaseID);
-			
-			extent = reports.startReport(resultLocation, "Create_Delete_Company");
-			test = extent.startTest("Pre requisite");
-			objData = datatable.getExcelTestData("CompanyTestData", "company_101", moduleName, resultLocation, test);
-			
-			oBrowser = appInd.launchApp(objData.get("TD_BrowserType"), resultLocation, test);
+			oBrowser = appInd.launchApp(objData.get("TD_BrowserType"), test);
 			
 			if(oBrowser !=null ) {
-				strStatus+= appDep.navigateURL(oBrowser, appInd.readPropData("URL"), resultLocation, test);
+				strStatus+= appDep.navigateURL(oBrowser, appInd.readPropData("URL"), test);
 				
-				test = extent.startTest("login To Application");
-				strStatus+= appDep.loginToApp(oBrowser, objData.get("TD_UN"), objData.get("TD_PWD"), resultLocation, test);
+				strStatus+= appDep.loginToApp(oBrowser, objData.get("TD_UN"), objData.get("TD_PWD"), test);
 				
-				test = extent.startTest("Create Company");
-				strCompanyName = companyModule.createCompany(oBrowser, objData, resultLocation, test);
+				strCompanyName = companyModule.createCompany(oBrowser, objData, test);
 				
-				test = extent.startTest("Delete Company");
-				strStatus+= companyModule.deleteCompany(oBrowser, strCompanyName, resultLocation, test);
+				strStatus+= companyModule.deleteCompany(oBrowser, strCompanyName, test);
 				
-				test = extent.startTest("logout From Application");
-				strStatus+= appDep.logoutFromApp(oBrowser, resultLocation, test);
+				strStatus+= appDep.logoutFromApp(oBrowser, test);
 				
 				if(strStatus.contains("false")) {
 					return false;
@@ -58,18 +44,18 @@ public class CompanyModuleTestScripts extends DriverScript{
 					return true;
 				}
 			}else {
-				reports.writeResult(oBrowser, "Fail", "Failed to launch the '"+objData.get("TD_BrowserType")+"' browser", resultLocation, test);
+				reports.writeResult(oBrowser, "Fail", "Failed to launch the '"+objData.get("TD_BrowserType")+"' browser", test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oBrowser, "Exception", "Exception in TS_Create_Delete_Company() test script", resultLocation, test);
+			reports.writeResult(oBrowser, "Exception", "Exception in TS_Create_Delete_Company() test script", test);
 			return false;
 		}
 		finally
 		{
-			appInd.closeBrowser(oBrowser, resultLocation, test);
-			reports.endTest(extent, test);
+			appInd.closeBrowser(oBrowser, test);
+			reports.endExtentReport(test);
 			oBrowser = null;
 		}
 	}

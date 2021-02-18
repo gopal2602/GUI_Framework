@@ -2,11 +2,7 @@ package com.gowrisoft.usermgmt.testscripts;
 
 import java.util.Map;
 import org.openqa.selenium.WebDriver;
-
 import com.gowrisoft.usermgmt.driver.DriverScript;
-import com.relevantcodes.extentreports.ExtentReports;
-import com.relevantcodes.extentreports.ExtentTest;
-
 
 public class UserModuleTestScripts extends DriverScript{
 	/****************************************************************
@@ -24,32 +20,22 @@ public class UserModuleTestScripts extends DriverScript{
 		Map<String, String> objData = null;
 		String strStatus = null;
 		String strUserName = null;
-		ExtentReports extent = null;
-		ExtentTest test = null;
-		String resultLocation = null;
 		try {
-			resultLocation = reports.createResultDirectories(appInd.readPropData("BuildNumber"), moduleName, testCaseID);
-			
-			extent = reports.startReport(resultLocation, "Create_Delete_User");
-			test = extent.startTest("Pre requisite");
-			objData = datatable.getExcelTestData("UserTestData", "user_101", moduleName, resultLocation, test);
-			oBrowser = appInd.launchApp(objData.get("TD_BrowserType"), resultLocation, test);
+			test = extent.startTest("TS_Create_Delete_User");
+			objData = datatable.getExcelTestData("UserTestData", "user_101", moduleName, test);
+			oBrowser = appInd.launchApp(objData.get("TD_BrowserType"), test);
 			
 			if(oBrowser !=null ) {
-				strStatus+= appDep.navigateURL(oBrowser, appInd.readPropData("URL"), resultLocation, test);
-				reports.writeResult(oBrowser, "screenshot", "Login page opened successful", resultLocation, test);
+				strStatus+= appDep.navigateURL(oBrowser, appInd.readPropData("URL"), test);
+				reports.writeResult(oBrowser, "screenshot", "Login page opened successful", test);
 				
-				test = extent.startTest("loginToApplication");
-				strStatus+= appDep.loginToApp(oBrowser, objData.get("TD_UN"), objData.get("TD_PWD"), resultLocation, test);
+				strStatus+= appDep.loginToApp(oBrowser, objData.get("TD_UN"), objData.get("TD_PWD"), test);
 				
-				test = extent.startTest("createUser");
-				strUserName = userModule.createUser(oBrowser, objData, resultLocation, test);
+				strUserName = userModule.createUser(oBrowser, objData, test);
 				
-				test = extent.startTest("deleteUser");
-				strStatus+= userModule.deleteUser(oBrowser, strUserName, resultLocation, test);
+				strStatus+= userModule.deleteUser(oBrowser, strUserName, test);
 				
-				test = extent.startTest("createUser");
-				strStatus+= appDep.logoutFromApp(oBrowser, resultLocation, test);
+				strStatus+= appDep.logoutFromApp(oBrowser, test);
 				
 				if(strStatus.contains("false")) {
 					return false;
@@ -57,18 +43,18 @@ public class UserModuleTestScripts extends DriverScript{
 					return true;
 				}
 			}else {
-				reports.writeResult(oBrowser, "Fail", "Failed to launch the '"+objData.get("TD_BrowserType")+"' browser", resultLocation, test);
+				reports.writeResult(oBrowser, "Fail", "Failed to launch the '"+objData.get("TD_BrowserType")+"' browser", test);
 				return false;
 			}
 		}catch(Exception e)
 		{
-			reports.writeResult(oBrowser, "Exception", "Exception in TS_Create_Delete_User() test script", resultLocation, test);
+			reports.writeResult(oBrowser, "Exception", "Exception in TS_Create_Delete_User() test script", test);
 			return false;
 		}
 		finally
 		{
-			appInd.closeBrowser(oBrowser, resultLocation, test);
-			reports.endTest(extent, test);
+			appInd.closeBrowser(oBrowser, test);
+			reports.endExtentReport(test);
 			oBrowser = null;
 		}
 	}

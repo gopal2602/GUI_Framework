@@ -12,6 +12,8 @@ import com.gowrisoft.usermgmt.methods.Datatable;
 import com.gowrisoft.usermgmt.methods.ProjectModuleMethods;
 import com.gowrisoft.usermgmt.methods.UserModuleMethods;
 import com.gowrisoft.usermgmt.reports.ReportUtils;
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
 
 
 public class DriverScript {
@@ -23,7 +25,10 @@ public class DriverScript {
 	public static CompanyModuleMethods companyModule = null;
 	public static ProjectModuleMethods projectModule = null;
 	public static String controller = null;
-	
+	public static ExtentReports extent = null;
+	public static ExtentTest test = null;
+	public static String screenshotLocation = null;
+	public static String moduleName = null;
 	
 	@BeforeSuite
 	public void loadClasses() {
@@ -36,11 +41,13 @@ public class DriverScript {
 			companyModule = new CompanyModuleMethods();
 			projectModule = new ProjectModuleMethods();
 			controller = System.getProperty("user.dir")+"\\ExecutionController\\RunnerFile.xlsx";
+			extent = reports.startExtentReport("GUITestResults", appInd.readPropData("BuildNumber"));
 		}catch(Exception e)
 		{
 			System.out.println("Exception in loadClasses() method. "+e.getMessage());
 		}
 	}
+	
 	
 	
 	@DataProvider(name = "ExecutionController", parallel = true)
@@ -57,8 +64,6 @@ public class DriverScript {
 		Object obj = null;
 		Method meth = null;
 		String status = null;
-		int count = 0;
-		String strModuleName = null;
 		String strTestCaseID = null;
 		Class resultInfo[] = null;
 		try {			
@@ -71,9 +76,9 @@ public class DriverScript {
 			obj = cls.newInstance();
 			meth = obj.getClass().getMethod(objData.get("TestScriptName"), resultInfo);
 			strTestCaseID = objData.get("TestCaseID");
-			strModuleName = objData.get("ModuleName");
+			moduleName = objData.get("ModuleName");
 			
-			status = String.valueOf(meth.invoke(obj, strModuleName, strTestCaseID));
+			status = String.valueOf(meth.invoke(obj, moduleName, strTestCaseID));
 			
 			if(status.equals("true")) {
 				datatable.setCellData(controller, "ExecuteTest", "Status", objData.get("TestScriptName"), "Passed");

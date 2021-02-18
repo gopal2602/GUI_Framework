@@ -29,12 +29,12 @@ public class Datatable extends DriverScript{
 	 * Purpose			: to get the row number form the excel file
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: String filePath, String sheetName, String resultLocation, ExtentTest test
+	 * Arguments		: String filePath, String sheetName, ExtentTest test
 	 * Return type		: int
 	 * Date Created		: 
 	 * **********************************************
 	 */
-	public int getRowNumber(String filePath, String sheetName, String resultLocation, ExtentTest test)
+	public int getRowNumber(String filePath, String sheetName, ExtentTest test)
 	{
 		FileInputStream fin = null;
 		Workbook wb = null;
@@ -46,7 +46,7 @@ public class Datatable extends DriverScript{
 			sh = wb.getSheet(sheetName);
 			
 			if(sh==null) {
-				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist", resultLocation, test);
+				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist", test);
 				return -1;
 			}
 			
@@ -54,7 +54,7 @@ public class Datatable extends DriverScript{
 			return rowCount;
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in getRowNumber() method. "+e.getMessage(), resultLocation, test);
+			reports.writeResult(null, "Exception", "Exception in getRowNumber() method. "+e.getMessage(), test);
 			return -1;
 		}
 		finally
@@ -67,7 +67,7 @@ public class Datatable extends DriverScript{
 				wb = null;
 			}catch(Exception e)
 			{
-				reports.writeResult(null, "Exception", "Exception in getRowNumber() method. "+e.getMessage(), resultLocation, test);
+				reports.writeResult(null, "Exception", "Exception in getRowNumber() method. "+e.getMessage(), test);
 			}
 		}
 	}
@@ -82,12 +82,12 @@ public class Datatable extends DriverScript{
 	 * Purpose			: to read the cell data form the excel file
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: String filePath, String sheetName, String colName, int rowNum, String resultLocation, ExtentTest test
+	 * Arguments		: String filePath, String sheetName, String colName, int rowNum, ExtentTest test
 	 * Return type		: String
 	 * Date Created		: 
 	 * **********************************************
 	 */
-	public String getCellData(String filePath, String sheetName, String colName, int rowNum, String resultLocation, ExtentTest test)
+	public String getCellData(String filePath, String sheetName, String colName, int rowNum, ExtentTest test)
 	{
 		FileInputStream fin = null;
 		Workbook wb = null;
@@ -105,7 +105,7 @@ public class Datatable extends DriverScript{
 			sh = wb.getSheet(sheetName);
 			
 			if(sh==null) {
-				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist", resultLocation, test);
+				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist", test);
 				return null;
 			}
 			
@@ -165,7 +165,7 @@ public class Datatable extends DriverScript{
 			return strData;
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in getCellData() method. "+e.getMessage(), resultLocation, test);
+			reports.writeResult(null, "Exception", "Exception in getCellData() method. "+e.getMessage(), test);
 			return null;
 		}
 		finally
@@ -180,7 +180,7 @@ public class Datatable extends DriverScript{
 				wb = null;
 			}catch(Exception e)
 			{
-				reports.writeResult(null, "Exception", "Exception in getCellData() method. "+e.getMessage(), resultLocation, test);
+				reports.writeResult(null, "Exception", "Exception in getCellData() method. "+e.getMessage(), test);
 				return null;
 			}
 		}
@@ -309,12 +309,12 @@ public class Datatable extends DriverScript{
 	 * Purpose			: to read the data from the excel based on logicalName
 	 * Author			:
 	 * Reviewer			:
-	 * Arguments		: String sheetName, String logicalName, String strModuleName, String resultLocation, ExtentTest test
+	 * Arguments		: String sheetName, String logicalName, String strModuleName, ExtentTest test
 	 * Return type		: String
 	 * Date Created		: 
 	 * **********************************************
 	 */
-	public Map<String, String> getExcelTestData(String sheetName, String logicalName, String strModuleName, String resultLocation, ExtentTest test)
+	public Map<String, String> getExcelTestData(String sheetName, String logicalName, String strModuleName, ExtentTest test)
 	{
 		FileInputStream fin = null;
 		Workbook wb = null;
@@ -336,7 +336,7 @@ public class Datatable extends DriverScript{
 			wb = new XSSFWorkbook(fin);
 			sh = wb.getSheet(sheetName);
 			if(sh==null) {
-				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist. Hence can't read the test data", resultLocation, test);
+				reports.writeResult(null, "Fail", "The sheet '"+sheetName+"' doesnot exist. Hence can't read the test data", test);
 				return null;
 			}
 			
@@ -405,16 +405,16 @@ public class Datatable extends DriverScript{
 					}
 					objData.put(key, value);
 				}
-				reports.writeResult(null, "Pass", "The testdata was read from the '"+sheetName+"' sheet under '"+strModuleName+".xlsx"+"' file", resultLocation, test);
+				reports.writeResult(null, "Pass", "The testdata was read from the '"+sheetName+"' sheet under '"+strModuleName+".xlsx"+"' file", test);
 				return objData;
 			}else {
-				reports.writeResult(null, "Fail", "Failed to find the logical name '"+logicalName+"' in the test data sheet", resultLocation, test);
+				reports.writeResult(null, "Fail", "Failed to find the logical name '"+logicalName+"' in the test data sheet", test);
 				return null;
 			}
 			
 		}catch(Exception e)
 		{
-			reports.writeResult(null, "Exception", "Exception in getExcelData() method. "+e.getMessage(), resultLocation, test);
+			reports.writeResult(null, "Exception", "Exception in getExcelData() method. "+e.getMessage(), test);
 			return null;
 		}
 		finally
@@ -431,7 +431,7 @@ public class Datatable extends DriverScript{
 				wb = null;
 			}catch(Exception e)
 			{
-				reports.writeResult(null, "Exception", "Exception in getExcelData() method. "+e.getMessage(), resultLocation, test);
+				reports.writeResult(null, "Exception", "Exception in getExcelData() method. "+e.getMessage(), test);
 				return null;
 			}
 		}
