@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="testng Suite" data-provider-thread-count="1">
+   <test name="testng Test">
+      <classes>
+          <class name="com.gowrisoft.usermgmt.driver.DriverScript"></class>
+      </classes>
+   </test>
+</suite>
