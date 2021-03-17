@@ -102,6 +102,4 @@ public interface ObjectLocators {
 	final String obj_User_Deleted_Confirmation_Msg = "//p[contains(text(), 'User was successfully destroyed')]";
 	
 	
-	
-	
 }
